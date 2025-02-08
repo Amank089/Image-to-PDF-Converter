@@ -1,63 +1,92 @@
 let cropper;
+let currentImage;
 
-document.getElementById('imageUpload').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
+// Drag & Drop Functionality
+const dropArea = document.getElementById('dropArea');
+const imageUpload = document.getElementById('imageUpload');
+const imageGrid = document.getElementById('imageGrid');
+
+dropArea.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = '#007bff';
+});
+
+dropArea.addEventListener('dragleave', () => {
+    dropArea.style.borderColor = '#dddddd';
+});
+
+dropArea.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropArea.style.borderColor = '#dddddd';
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+});
+
+imageUpload.addEventListener('change', (e) => {
+    const files = e.target.files;
+    handleFiles(files);
+});
+
+function handleFiles(files) {
+    for (const file of files) {
         const reader = new FileReader();
-        reader.onload = function(e) {
-            const img = document.getElementById('imagePreview');
+        reader.onload = (e) => {
+            const img = document.createElement('img');
             img.src = e.target.result;
-            img.style.display = 'block';
-
-            // Initialize Cropper
-            if (cropper) {
-                cropper.destroy();
-            }
-            cropper = new Cropper(img, {
-                aspectRatio: NaN,
-                viewMode: 1,
-            });
-
-            document.getElementById('cropBtn').disabled = false;
-            document.getElementById('convertBtn').disabled = false;
+            img.addEventListener('click', () => editImage(img));
+            imageGrid.appendChild(img);
         };
         reader.readAsDataURL(file);
     }
-});
+}
 
-document.getElementById('cropBtn').addEventListener('click', function() {
+// Image Editing Functions
+function editImage(img) {
+    currentImage = img;
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(img, {
+        aspectRatio: NaN,
+        viewMode: 1,
+    });
+    document.getElementById('cropBtn').disabled = false;
+    document.getElementById('rotateBtn').disabled = false;
+}
+
+document.getElementById('cropBtn').addEventListener('click', () => {
     if (cropper) {
         const canvas = cropper.getCroppedCanvas();
-        const img = document.getElementById('imagePreview');
-        img.src = canvas.toDataURL();
+        currentImage.src = canvas.toDataURL();
         cropper.destroy();
     }
 });
 
-document.getElementById('convertBtn').addEventListener('click', function() {
-    const img = document.getElementById('imagePreview');
-    const compressOption = document.getElementById('compressOption').value;
-
-    let quality = 1.0;
-    if (compressOption === 'kbToMb') {
-        quality = 0.5; // Reduce quality for KB to MB compression
-    } else if (compressOption === 'mbToKb') {
-        quality = 0.1; // Reduce quality further for MB to KB compression
+document.getElementById('rotateBtn').addEventListener('click', () => {
+    if (cropper) {
+        cropper.rotate(90);
     }
+});
 
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
-    ctx.drawImage(img, 0, 0);
+// Convert to PDF
+document.getElementById('convertBtn').addEventListener('click', () => {
+    const images = document.querySelectorAll('#imageGrid img');
+    const pdf = new jspdf.jsPDF({
+        orientation: document.getElementById('pageOrientation').value,
+        unit: 'mm',
+        format: document.getElementById('pageSize').value,
+    });
 
-    canvas.toBlob(function(blob) {
-        const url = URL.createObjectURL(blob);
-        const pdf = new jspdf.jsPDF();
+    images.forEach((img, index) => {
+        if (index > 0) pdf.addPage();
         const imgWidth = pdf.internal.pageSize.getWidth();
         const imgHeight = (img.naturalHeight * imgWidth) / img.naturalWidth;
+        pdf.addImage(img.src, 'JPEG', 0, 0, imgWidth, imgHeight);
+    });
 
-        pdf.addImage(url, 'JPEG', 0, 0, imgWidth, imgHeight);
-        pdf.save('converted-image.pdf');
-    }, 'image/jpeg', quality);
+    pdf.save('converted-images.pdf');
+});
+
+// Dark Mode Toggle
+const darkModeToggle = document.getElementById('darkMode');
+darkModeToggle.addEventListener('change', () => {
+    document.body.setAttribute('data-theme', darkModeToggle.checked ? 'dark' : 'light');
 });
