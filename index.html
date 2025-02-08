@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to PDF Converter</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>Image to PDF Converter</h1>
+        <p>Upload an image, crop, compress, and convert it to a PDF file.</p>
+
+        <!-- Upload Section -->
+        <div class="upload-section">
+            <input type="file" id="imageUpload" accept="image/*">
+            <label for="imageUpload" class="upload-label">Choose Image</label>
+        </div>
+
+        <!-- Image Preview and Editing Section -->
+        <div class="preview-section">
+            <img id="imagePreview" src="#" alt="Image Preview" style="display:none;">
+            <canvas id="imageCanvas" style="display:none;"></canvas>
+        </div>
+
+        <!-- Crop and Compression Options -->
+        <div class="tools-section">
+            <button id="cropBtn" disabled>Crop Image</button>
+            <select id="compressOption">
+                <option value="none">No Compression</option>
+                <option value="kbToMb">Compress KB to MB</option>
+                <option value="mbToKb">Compress MB to KB</option>
+            </select>
+        </div>
+
+        <!-- Convert Button -->
+        <button id="convertBtn" disabled>Convert to PDF</button>
+
+        <!-- Terms and Conditions -->
+        <div class="terms-section">
+            <h2>Terms and Conditions</h2>
+            <div class="terms-content">
+                <p>
+                    By using this Image to PDF Converter tool, you agree to the following terms and conditions:
+                    <br><br>
+                    1. **Acceptance of Terms**: Your use of this tool constitutes your agreement to these terms. If you do not agree, please do not use the tool.
+                    <br><br>
+                    2. **User Responsibility**: You are solely responsible for the images you upload and the resulting PDFs. Ensure you have the necessary rights to use and convert the images.
+                    <br><br>
+                    3. **Privacy**: We do not store or share your uploaded images or PDFs. All processing is done locally in your browser.
+                    <br><br>
+                    4. **Limitation of Liability**: This tool is provided "as is." We are not liable for any damages or losses resulting from its use.
+                    <br><br>
+                    5. **Prohibited Use**: Do not use this tool for illegal or unauthorized purposes, including but not limited to copyright infringement.
+                    <br><br>
+                    6. **Modifications**: We reserve the right to modify or discontinue the tool at any time without notice.
+                    <br><br>
+                    7. **Governing Law**: These terms are governed by the laws of your jurisdiction.
+                    <br><br>
+                    By continuing to use this tool, you acknowledge that you have read, understood, and agree to these terms and conditions.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css">
+    <script src="script.js"></script>
+</body>
+</html>
